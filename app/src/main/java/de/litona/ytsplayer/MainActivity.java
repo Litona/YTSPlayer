@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     static File songsDirectory;
     static File songJsonFile;
     static List<SynchedSong> songs = Collections.emptyList();
+    static TagsFragment tags = new TagsFragment();
+    static SonglistFragment songlist = new SonglistFragment();
     static PlaylistFragment playlist = new PlaylistFragment();
     static PlayerControlView playerControlView;
     static TextView songTitleView;
@@ -74,9 +76,9 @@ public class MainActivity extends AppCompatActivity {
             public Fragment getItem(int position) {
                 switch (position) {
                     case 0:
-                        return new TagsFragment();
+                        return tags;
                     case 1:
-                        return new SonglistFragment();
+                        return songlist;
                     case 2:
                         return playlist;
                 }

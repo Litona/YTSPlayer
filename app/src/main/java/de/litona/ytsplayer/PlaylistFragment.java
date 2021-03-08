@@ -4,7 +4,9 @@ import android.app.PendingIntent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.WeakHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -105,6 +108,37 @@ public class PlaylistFragment extends Fragment implements Player.EventListener, 
                 vh.durationV.setText("" + 0);
                 vh.yearV.setText(song.getYear());
                 vh.tagsV.setText(String.join(", ", song.getTags()));
+                if (i < playing)
+                    vh.background.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+                else
+                    vh.background.setBackgroundColor(getResources().getColor(android.R.color.black));
+                vh.itemView.setOnTouchListener(new View.OnTouchListener() {
+                    private GestureDetector gestureDetector = new GestureDetector(view.getContext(), new GestureDetector.SimpleOnGestureListener() {
+                        @Override
+                        public boolean onSingleTapConfirmed(MotionEvent e) {
+                            jumpTo(i);
+                            return super.onSingleTapConfirmed(e);
+                        }
+
+                        @Override
+                        public void onLongPress(MotionEvent e) {
+                            remove(i);
+                            super.onLongPress(e);
+                        }
+
+                        @Override
+                        public boolean onDoubleTap(MotionEvent e) {
+                            appendNext(playlist.get(i).synchedSong);
+                            return super.onDoubleTap(e);
+                        }
+                    });
+
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        gestureDetector.onTouchEvent(event);
+                        return true;
+                    }
+                });
             }
 
             @Override
@@ -129,6 +163,7 @@ public class PlaylistFragment extends Fragment implements Player.EventListener, 
                 TextView durationV;
                 TextView yearV;
                 TextView tagsV;
+                View background;
 
                 public VH(@NonNull View itemView) {
                     super(itemView);
@@ -139,6 +174,7 @@ public class PlaylistFragment extends Fragment implements Player.EventListener, 
                     durationV = itemView.findViewById(R.id.durationText);
                     yearV = itemView.findViewById(R.id.yearText);
                     tagsV = itemView.findViewById(R.id.tagsText);
+                    background = itemView.findViewById(R.id.background);
                 }
             }
         });
@@ -153,22 +189,52 @@ public class PlaylistFragment extends Fragment implements Player.EventListener, 
             playlist.add(e);
         });
         adapter.notifyDataSetChanged();
-        System.out.println(player.getPlaybackState());
+    }
+
+    public void shuffleIn(List<SynchedSong> songs) {
+        if (playing + 1 < playlist.size()) {
+            Random random = new Random();
+            songs.forEach(s -> addAtIndex(s, playing + 2 + random.nextInt(playlist.size() - playing - 1), false));
+            adapter.notifyDataSetChanged();
+        } else
+            appendShuffled(songs);
+    }
+
+    public void addAtIndex(SynchedSong song, int index, boolean notify) {
+        if (index <= playing) // pointless..
+            return;
+        Entry e = new Entry(song);
+        player.addMediaItem(index, e.mediaItem);
+        playlist.add(index, e);
+        if (notify)
+            adapter.notifyDataSetChanged();
     }
 
     public void appendNext(SynchedSong song) {
-        Entry e = new Entry(song);
-        player.addMediaItem(playing + 1, e.mediaItem);
-        playlist.add(playing + 1, e);
-        adapter.notifyDataSetChanged();
+        addAtIndex(song, playing + 1, true);
+    }
+
+    public void clearAndShuffleNew(List<SynchedSong> songs) {
+        player.clearMediaItems();
+        playlist.clear();
+        playing = 0;
+        appendShuffled(songs);
     }
 
     public void remove(int index) {
-
+        if (index <= playing) // pointless..
+            return;
+        player.removeMediaItem(index);
+        playlist.remove(index);
+        adapter.notifyDataSetChanged();
     }
 
     public void jumpTo(int index) {
-
+        while (playing != index)
+            if (playing > index)
+                player.previous();
+            else
+                player.next();
     }
 
     // Method for Player.EventListener
@@ -181,9 +247,9 @@ public class PlaylistFragment extends Fragment implements Player.EventListener, 
             else if (mediaItem == null)
                 System.out.println("Null MediaItem; Is this the end?");
             else if (playlist.get(playing + 1).mediaItem == mediaItem)
-                playing++;
+                adapter.notifyItemChanged(playing++);
             else if (playlist.get(playing - 1).mediaItem == mediaItem)
-                playing--;
+                adapter.notifyItemChanged(--playing);
             else {
                 for (int i = 0; i < playlist.size(); i++)
                     if (playlist.get(i).mediaItem == mediaItem) {
@@ -193,6 +259,7 @@ public class PlaylistFragment extends Fragment implements Player.EventListener, 
                 System.out.println("ERROR: Could not find media! Media unsynched!");
             }
         }
+        System.out.println(playing);
     }
 
 

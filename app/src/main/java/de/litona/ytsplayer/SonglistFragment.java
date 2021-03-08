@@ -20,6 +20,7 @@ import java.util.WeakHashMap;
 public class SonglistFragment extends Fragment {
 
     static RecyclerView.Adapter adapter;
+    FloatingActionButton appendShuffledButton, clearAndShuffleButton, shuffleInButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -91,14 +92,39 @@ public class SonglistFragment extends Fragment {
                 }
             }
         });
-        FloatingActionButton appendShuffledButton = view.findViewById(R.id.appendShuffledButton);
-        appendShuffledButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity.playlist.appendShuffled(TagsFragment.selectedSongs);
-                //appendShuffledButton.hide();
-            }
+        appendShuffledButton = view.findViewById(R.id.appendShuffledButton);
+        appendShuffledButton.setOnClickListener(v -> {
+            MainActivity.playlist.appendShuffled(TagsFragment.selectedSongs);
+            hideButtons();
+        });
+        shuffleInButton = view.findViewById(R.id.shuffleInButton);
+        shuffleInButton.setOnClickListener(v -> {
+            MainActivity.playlist.shuffleIn(TagsFragment.selectedSongs);
+            hideButtons();
+        });
+        clearAndShuffleButton = view.findViewById(R.id.clearAndShuffleButton);
+        clearAndShuffleButton.setOnClickListener(v -> {
+            MainActivity.playlist.clearAndShuffleNew(TagsFragment.selectedSongs);
+            hideButtons();
         });
         return view;
+    }
+
+    public void showButtons() {
+        if (appendShuffledButton != null)
+            appendShuffledButton.show();
+        if (shuffleInButton != null)
+            shuffleInButton.show();
+        if (clearAndShuffleButton != null)
+            clearAndShuffleButton.show();
+    }
+
+    public void hideButtons() {
+        if (appendShuffledButton != null)
+            appendShuffledButton.hide();
+        if (shuffleInButton != null)
+            shuffleInButton.hide();
+        if (clearAndShuffleButton != null)
+            clearAndShuffleButton.hide();
     }
 }

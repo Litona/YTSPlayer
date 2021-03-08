@@ -35,7 +35,6 @@ public class TagsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        long timeA = System.currentTimeMillis();
         View view = inflater.inflate(R.layout.fragment_tags, container, false);
         allTagsLayout = view.findViewById(R.id.allTagsLayout);
         selectedTagsLayout = view.findViewById(R.id.selectedTagsLayout);
@@ -88,12 +87,12 @@ public class TagsFragment extends Fragment {
                             allTagsLayout.addView(text);
                     });
                     infoTextView.setText("With above listed additionally available tags, the selection underneath found " + selectedSongs.size() + " songs");
+                    MainActivity.songlist.showButtons();
                 }
             });
             tagMap.put(tag, text);
             allTagsLayout.addView(text);
         });
-        System.out.println("millis4tags" + (System.currentTimeMillis() - timeA));
         return view;
     }
 }
