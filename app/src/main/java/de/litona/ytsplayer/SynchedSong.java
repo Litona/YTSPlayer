@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.ExecutionException;
 
 final class SynchedSong extends PreSynchedSong implements Comparable<SynchedSong> {
 
@@ -106,6 +107,18 @@ final class SynchedSong extends PreSynchedSong implements Comparable<SynchedSong
             }
         }
         return null;
+    }
+
+    public Bitmap getThumbnailSync() throws ExecutionException, InterruptedException {
+        Bitmap t;
+        if ((t = bitmapCache.get(file)) != null)
+            return t;
+        else {
+            //noinspection deprecation
+            BitmapWorkerTask task = new BitmapWorkerTask(null);
+            task.execute(file);
+            return task.get();
+        }
     }
 
     @SuppressWarnings("deprecation")

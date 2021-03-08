@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -22,7 +23,7 @@ public class TagsFragment extends Fragment {
     TreeMap<String, TextView> tagMap = new TreeMap<String, TextView>(Comparator.comparing(String::toLowerCase));
     ViewGroup allTagsLayout;
     ViewGroup selectedTagsLayout;
-    Collection<SynchedSong> selectedSongs = MainActivity.songs;
+    static List<SynchedSong> selectedSongs = MainActivity.songs;
     TextView infoTextView;
 
     @Override
@@ -76,6 +77,7 @@ public class TagsFragment extends Fragment {
                     selectedSongs = MainActivity.songs.stream().filter(song -> tagMap.values().stream().map(TextView::getText).allMatch(predTag -> predTag.charAt(0) == '-' ?
                             song.getTags().stream().noneMatch(s -> s.contentEquals(predTag.subSequence(1, predTag.length()))) :
                             (predTag.charAt(0) != '✓' || song.getTags().stream().anyMatch(s -> s.contentEquals(predTag.subSequence(1, predTag.length())))))).collect(Collectors.toList());
+                    SonglistFragment.adapter.notifyDataSetChanged();
                     allTagsLayout.removeAllViews();
                     selectedTagsLayout.removeAllViews();
                     Collection<String> selectedTags = selectedSongs.stream().map(SynchedSong::getTags).flatMap(Collection::stream).collect(Collectors.toSet());

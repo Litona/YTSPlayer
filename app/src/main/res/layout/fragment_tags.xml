@@ -24,16 +24,17 @@
         </ScrollView>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="0">
 
-            <TextView
+            <de.litona.ytsplayer.VerticalTextView
                 android:id="@+id/infoTextView"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:rotation="-90"
+                android:gravity="bottom"
                 android:text="With above listed additionally available tags, the selection underneath found 0 songs"
+                android:textColor="?android:attr/textColorTertiary"
                 android:textSize="10sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

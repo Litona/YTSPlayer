@@ -2,6 +2,7 @@ package de.litona.ytsplayer;
 
 import android.os.Bundle;
 import android.os.Environment;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -10,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.exoplayer2.ui.PlayerControlView;
 import com.google.android.material.tabs.TabLayout;
 
 import org.json.JSONArray;
@@ -21,6 +23,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -30,7 +33,10 @@ public class MainActivity extends AppCompatActivity {
 
     static File songsDirectory;
     static File songJsonFile;
-    static List<SynchedSong> songs = new ArrayList<>(1500);
+    static List<SynchedSong> songs = Collections.emptyList();
+    static PlaylistFragment playlist = new PlaylistFragment();
+    static PlayerControlView playerControlView;
+    static TextView songTitleView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +49,8 @@ public class MainActivity extends AppCompatActivity {
         // Deserializing Songs
         try (Stream<String> songsJsonStream = Files.lines(songJsonFile.toPath(), StandardCharsets.UTF_8)) {
             JSONArray array = new JSONObject(songsJsonStream.collect(Collectors.joining(" "))).getJSONArray("songs");
-            for(int i = 0; i< array.length(); i++)
+            songs = new ArrayList<>(array.length());
+            for (int i = 0; i < array.length(); i++)
                 songs.add(new SynchedSong(array.getJSONObject(i)));
         } catch (IOException | JSONException e) {
             System.out.println("No Songs File");
@@ -65,13 +72,13 @@ public class MainActivity extends AppCompatActivity {
             @NonNull
             @Override
             public Fragment getItem(int position) {
-                switch(position) {
+                switch (position) {
                     case 0:
                         return new TagsFragment();
                     case 1:
                         return new SonglistFragment();
                     case 2:
-                        return new TagsFragment();
+                        return playlist;
                 }
                 return null;
             }
@@ -82,5 +89,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         ((TabLayout) findViewById(R.id.tabs)).setupWithViewPager(p);
+
+        playerControlView = findViewById(R.id.playerControlView1);
+        songTitleView = findViewById(R.id.songTitleView);
     }
 }

@@ -45,70 +45,22 @@
 
         </com.google.android.material.tabs.TabLayout>
 
-        <LinearLayout
+        <com.google.android.exoplayer2.ui.PlayerControlView
+            android:id="@+id/playerControlView1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="-:-"
-                android:textColor="?android:attr/textColorSecondary" />
-
-            <Button
-                android:id="@+id/button4"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
-                android:layout_height="80dp"
-                android:layout_weight="1"
-                android:text="⏮"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="24sp" />
-
-            <Button
-                android:id="@+id/button3"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
-                android:layout_height="80dp"
-                android:layout_weight="1"
-                android:text="▶"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="24sp" />
-
-            <Button
-                android:id="@+id/button2"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
-                android:layout_height="80dp"
-                android:layout_weight="1"
-                android:text="⏭"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="24sp" />
-
-            <Button
-                android:id="@+id/button"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
-                android:layout_height="80dp"
-                android:layout_weight="1"
-                android:text="🔀"
-                android:textColor="?android:attr/textColorPrimary"
-                android:textSize="24sp" />
-
-        </LinearLayout>
-
-        <SeekBar
-            android:id="@+id/seekBar2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:progressTint="?attr/colorAccent"
-            android:thumbTint="?attr/colorAccent" />
+            android:hapticFeedbackEnabled="true"
+            android:soundEffectsEnabled="false"
+            app:bar_height="20dp"
+            app:buffered_color="#5C5C5C"
+            app:show_fastforward_button="false"
+            app:show_rewind_button="false"
+            app:show_shuffle_button="false"
+            app:show_timeout="-1"
+            app:unplayed_color="#5C5C5C" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/songTitleView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="No song"

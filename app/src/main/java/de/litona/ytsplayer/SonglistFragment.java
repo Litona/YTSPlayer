@@ -9,15 +9,17 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.HashMap;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.Map;
 import java.util.WeakHashMap;
 
 public class SonglistFragment extends Fragment {
+
+    static RecyclerView.Adapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,7 +32,7 @@ public class SonglistFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_songlist, container, false);
         RecyclerView rv = view.findViewById(R.id.recyclerView);
         rv.setLayoutManager(new GridLayoutManager(getContext(), 1));
-        rv.setAdapter(new RecyclerView.Adapter() {
+        rv.setAdapter(adapter = new RecyclerView.Adapter() {
 
             Map<RecyclerView.ViewHolder, SynchedSong.BitmapWorkerTask> tasks = new WeakHashMap<>();
 
@@ -44,7 +46,7 @@ public class SonglistFragment extends Fragment {
             @Override
             public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int i) {
                 VH vh = (VH) holder;
-                SynchedSong song = MainActivity.songs.get(i);
+                SynchedSong song = TagsFragment.selectedSongs.get(i);
                 tasks.put(vh, song.setThumbnail(vh.thumbnailV));
                 vh.interpretV.setText(song.getInterpret());
                 vh.titleV.setText(song.getSimpleTitle());
@@ -64,7 +66,7 @@ public class SonglistFragment extends Fragment {
 
             @Override
             public int getItemCount() {
-                return MainActivity.songs.size();
+                return TagsFragment.selectedSongs.size();
             }
 
             class VH extends RecyclerView.ViewHolder {
@@ -89,15 +91,14 @@ public class SonglistFragment extends Fragment {
                 }
             }
         });
-
-        /*for (int i = 0; i < MainActivity.songs.size(); i++) {
-            Fragment frag = SongFragment.newInstance(i);
-            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-            fragmentTransaction.add(R.id.layout, frag, "fragment" + i);
-            fragmentTransaction.commit();
-        }*/
+        FloatingActionButton appendShuffledButton = view.findViewById(R.id.appendShuffledButton);
+        appendShuffledButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.playlist.appendShuffled(TagsFragment.selectedSongs);
+                //appendShuffledButton.hide();
+            }
+        });
         return view;
     }
-
-
 }
