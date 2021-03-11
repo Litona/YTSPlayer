@@ -31,68 +31,66 @@ import java.util.stream.Stream;
 
 public class MainActivity extends AppCompatActivity {
 
-    static File songsDirectory;
-    static File songJsonFile;
-    static List<SynchedSong> songs = Collections.emptyList();
-    static TagsFragment tags = new TagsFragment();
-    static SonglistFragment songlist = new SonglistFragment();
-    static PlaylistFragment playlist = new PlaylistFragment();
-    static PlayerControlView playerControlView;
-    static TextView songTitleView;
+	static File songsDirectory;
+	static File songJsonFile;
+	static List<SynchedSong> songs = Collections.emptyList();
+	static TagsFragment tags = new TagsFragment();
+	static SonglistFragment songlist = new SonglistFragment();
+	static PlaylistFragment playlist = new PlaylistFragment();
+	static PlayerControlView playerControlView;
+	static TextView songTitleView;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
 
+		songsDirectory = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
+		songJsonFile = new File(songsDirectory, "songs.json");
+		// Deserializing Songs
+		try(Stream<String> songsJsonStream = Files.lines(songJsonFile.toPath(), StandardCharsets.UTF_8)) {
+			JSONArray array = new JSONObject(songsJsonStream.collect(Collectors.joining(" "))).getJSONArray("songs");
+			songs = new ArrayList<>(array.length());
+			for(int i = 0; i < array.length(); i++)
+				songs.add(new SynchedSong(array.getJSONObject(i)));
+		} catch(IOException | JSONException e) {
+			System.out.println("No Songs File");
+			e.printStackTrace();
+		}
+		songs = new CopyOnWriteArrayList<>(songs);
 
-        songsDirectory = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
-        songJsonFile = new File(songsDirectory, "songs.json");
-        // Deserializing Songs
-        try (Stream<String> songsJsonStream = Files.lines(songJsonFile.toPath(), StandardCharsets.UTF_8)) {
-            JSONArray array = new JSONObject(songsJsonStream.collect(Collectors.joining(" "))).getJSONArray("songs");
-            songs = new ArrayList<>(array.length());
-            for (int i = 0; i < array.length(); i++)
-                songs.add(new SynchedSong(array.getJSONObject(i)));
-        } catch (IOException | JSONException e) {
-            System.out.println("No Songs File");
-            e.printStackTrace();
-        }
-        songs = new CopyOnWriteArrayList<>(songs);
+		ViewPager p = findViewById(R.id.viewPager);
+		p.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
+			private String[] tabTitles = new String[] {"Tags", "Songlist", "Playlist"};
 
+			@Nullable
+			@Override
+			public CharSequence getPageTitle(int position) {
+				return tabTitles[position];
+			}
 
-        ViewPager p = findViewById(R.id.viewPager);
-        p.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
-            private String[] tabTitles = new String[]{"Tags", "Songlist", "Playlist"};
+			@NonNull
+			@Override
+			public Fragment getItem(int position) {
+				switch(position) {
+					case 0:
+						return tags;
+					case 1:
+						return songlist;
+					case 2:
+						return playlist;
+				}
+				return null;
+			}
 
-            @Nullable
-            @Override
-            public CharSequence getPageTitle(int position) {
-                return tabTitles[position];
-            }
+			@Override
+			public int getCount() {
+				return 3;
+			}
+		});
+		((TabLayout) findViewById(R.id.tabs)).setupWithViewPager(p);
 
-            @NonNull
-            @Override
-            public Fragment getItem(int position) {
-                switch (position) {
-                    case 0:
-                        return tags;
-                    case 1:
-                        return songlist;
-                    case 2:
-                        return playlist;
-                }
-                return null;
-            }
-
-            @Override
-            public int getCount() {
-                return 3;
-            }
-        });
-        ((TabLayout) findViewById(R.id.tabs)).setupWithViewPager(p);
-
-        playerControlView = findViewById(R.id.playerControlView1);
-        songTitleView = findViewById(R.id.songTitleView);
-    }
+		playerControlView = findViewById(R.id.playerControlView1);
+		songTitleView = findViewById(R.id.songTitleView);
+	}
 }
