@@ -1,37 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity"
+        android:layout_alignParentEnd="true">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="191dp">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:layout_editor_absoluteX="191dp">
 
         <Space
-            android:layout_width="match_parent"
-            android:layout_height="12dp" />
+                android:layout_width="match_parent"
+                android:layout_height="12dp" />
 
         <androidx.viewpager.widget.ViewPager
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:fillViewport="true" />
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:fillViewport="true" />
 
         <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabs"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:tabIconTint="?android:attr/textColorHighlight"
-            app:tabIndicatorColor="?attr/colorAccent"
-            app:tabTextColor="?attr/colorAccent">
+                android:id="@+id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:tabIconTint="?android:attr/textColorHighlight"
+                app:tabIndicatorColor="?attr/colorAccent"
+                app:tabTextColor="?attr/colorAccent">
 
             <com.google.android.material.tabs.TabItem
                     android:layout_width="wrap_content"
@@ -52,26 +53,34 @@
         </com.google.android.material.tabs.TabLayout>
 
         <com.google.android.exoplayer2.ui.PlayerControlView
-            android:id="@+id/playerControlView1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hapticFeedbackEnabled="true"
-            android:soundEffectsEnabled="false"
-            app:bar_height="20dp"
-            app:buffered_color="#5C5C5C"
-            app:show_fastforward_button="false"
-            app:show_rewind_button="false"
-            app:show_shuffle_button="false"
-            app:show_timeout="-1"
-            app:unplayed_color="#5C5C5C" />
+                android:id="@+id/playerControlView1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hapticFeedbackEnabled="true"
+                android:soundEffectsEnabled="false"
+                app:bar_height="20dp"
+                app:buffered_color="#5C5C5C"
+                app:show_fastforward_button="false"
+                app:show_rewind_button="false"
+                app:show_shuffle_button="false"
+                app:show_timeout="-1"
+                app:unplayed_color="#5C5C5C" />
 
         <TextView
-            android:id="@+id/songTitleView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="No song"
-            android:textAlignment="center"
-            android:textColor="?android:attr/textColorPrimary" />
+                android:id="@+id/songTitleView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="No song"
+                android:textAlignment="center"
+                android:textColor="?android:attr/textColorPrimary" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                app:srcCompat="@android:drawable/ic_delete"
+                android:id="@+id/endAppButton"
+                android:layout_gravity="bottom|start" />
 
     </LinearLayout>
 

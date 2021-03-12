@@ -20,7 +20,7 @@ import java.util.WeakHashMap;
 public class SonglistFragment extends Fragment {
 
 	static RecyclerView.Adapter adapter;
-	FloatingActionButton appendShuffledButton, clearAndShuffleButton, shuffleInButton;
+	FloatingActionButton appendShuffledButton, clearAndShuffleButton, shuffleInButton, removeFromPlaylistButton;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -106,6 +106,11 @@ public class SonglistFragment extends Fragment {
 			MainActivity.playlist.clearAndShuffleNew(TagsFragment.selectedSongs);
 			hideButtons();
 		});
+		removeFromPlaylistButton = view.findViewById(R.id.removeFromPlaylistButton);
+		removeFromPlaylistButton.setOnClickListener(v -> {
+			MainActivity.playlist.remove(TagsFragment.selectedSongs);
+			hideButtons();
+		});
 		return view;
 	}
 
@@ -116,6 +121,8 @@ public class SonglistFragment extends Fragment {
 			shuffleInButton.show();
 		if(clearAndShuffleButton != null)
 			clearAndShuffleButton.show();
+		if(removeFromPlaylistButton != null)
+			removeFromPlaylistButton.show();
 	}
 
 	public void hideButtons() {
@@ -125,5 +132,7 @@ public class SonglistFragment extends Fragment {
 			shuffleInButton.hide();
 		if(clearAndShuffleButton != null)
 			clearAndShuffleButton.hide();
+		if(removeFromPlaylistButton != null)
+			removeFromPlaylistButton.hide();
 	}
 }

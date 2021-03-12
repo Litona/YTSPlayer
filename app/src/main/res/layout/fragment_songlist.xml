@@ -19,25 +19,36 @@
         android:orientation="vertical">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/clearAndShuffleButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:clickable="false"
-            android:src="@drawable/exo_ic_rewind" />
+                android:id="@+id/clearAndShuffleButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:src="@drawable/exo_ic_rewind" />
 
         <Space
-            android:layout_width="match_parent"
-            android:layout_height="8dp" />
+                android:layout_width="match_parent"
+                android:layout_height="8dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/appendShuffledButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="false"
-            android:src="@drawable/exo_ic_chevron_right" />
+                android:id="@+id/removeFromPlaylistButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:src="@android:drawable/ic_delete" />
 
         <Space
-            android:layout_width="match_parent"
+                android:layout_width="match_parent"
+                android:layout_height="8dp" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/appendShuffledButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:src="@drawable/exo_ic_chevron_right" />
+
+        <Space
+                android:layout_width="match_parent"
             android:layout_height="8dp" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

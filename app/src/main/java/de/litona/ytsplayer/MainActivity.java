@@ -1,5 +1,6 @@
 package de.litona.ytsplayer;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
 import android.widget.TextView;
@@ -36,9 +37,10 @@ public class MainActivity extends AppCompatActivity {
 	static List<SynchedSong> songs = Collections.emptyList();
 	static TagsFragment tags = new TagsFragment();
 	static SonglistFragment songlist = new SonglistFragment();
-	static PlaylistFragment playlist = new PlaylistFragment();
+	static PlaylistFragment playlistFragment = new PlaylistFragment();
 	static PlayerControlView playerControlView;
 	static TextView songTitleView;
+	static Playlist playlist;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,8 @@ public class MainActivity extends AppCompatActivity {
 		}
 		songs = new CopyOnWriteArrayList<>(songs);
 
+		startService(new Intent(this, Playlist.class));
+
 		ViewPager p = findViewById(R.id.viewPager);
 		p.setAdapter(new FragmentPagerAdapter(getSupportFragmentManager()) {
 			private String[] tabTitles = new String[] {"Tags", "Songlist", "Playlist"};
@@ -78,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
 					case 1:
 						return songlist;
 					case 2:
-						return playlist;
+						return playlistFragment;
 				}
 				return null;
 			}
@@ -92,5 +96,9 @@ public class MainActivity extends AppCompatActivity {
 
 		playerControlView = findViewById(R.id.playerControlView1);
 		songTitleView = findViewById(R.id.songTitleView);
+		findViewById(R.id.endAppButton).setOnClickListener(v -> {
+			playlist.stopSelf();
+			finishAffinity();
+		});
 	}
 }
