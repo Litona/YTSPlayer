@@ -5,7 +5,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.IBinder;
 
 import androidx.annotation.Nullable;
@@ -36,7 +35,7 @@ public class Playlist extends Service
 		}
 
 		Entry(SynchedSong synchedSong) {
-			this(MediaItem.fromUri(Uri.fromFile(synchedSong.getFile())), synchedSong);
+			this(synchedSong.getMediaItem(), synchedSong);
 		}
 	}
 

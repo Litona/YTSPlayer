@@ -1,6 +1,7 @@
 package de.litona.ytsplayer;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.widget.TextView;
@@ -12,8 +13,14 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.ui.PlayerControlView;
+import com.google.android.exoplayer2.util.MimeTypes;
 import com.google.android.material.tabs.TabLayout;
+import com.yausername.youtubedl_android.YoutubeDL;
+import com.yausername.youtubedl_android.YoutubeDLException;
+import com.yausername.youtubedl_android.YoutubeDLRequest;
+import com.yausername.youtubedl_android.mapper.VideoInfo;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -98,7 +106,45 @@ public class MainActivity extends AppCompatActivity {
 		songTitleView = findViewById(R.id.songTitleView);
 		findViewById(R.id.endAppButton).setOnClickListener(v -> {
 			playlist.stopSelf();
-			finishAffinity();
+			finish();
 		});
+	}
+
+	@SuppressWarnings({"deprecation", "StaticFieldLeak"})
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		if(intent.getAction().equals(Intent.ACTION_SEND) && "text/plain".equals(intent.getType())) {
+			String ytId = intent.getStringExtra(Intent.EXTRA_TEXT).replace("https://youtu.be/", "");
+			new AsyncTask<String, Void, TempSynchedSong>() {
+
+				@Override
+				protected TempSynchedSong doInBackground(String... strings) {
+					try {
+						YoutubeDL.getInstance().init(MainActivity.playlist.getApplication());
+						YoutubeDL.getInstance().updateYoutubeDL(MainActivity.playlist.getApplication());
+					} catch(YoutubeDLException e) {
+						System.out.println("failed to initialize ytdl");
+						return null;
+					}
+					YoutubeDLRequest request = new YoutubeDLRequest("https://youtu.be/" + strings[0]);
+					request.addOption("-f", "best");
+					try {
+						VideoInfo videoInfo = YoutubeDL.getInstance().getInfo(request);
+						return new TempSynchedSong(strings[0], videoInfo.getTitle(), videoInfo.getUploadDate(),
+							new MediaItem.Builder().setUri(videoInfo.getUrl()).setMimeType(MimeTypes.APPLICATION_MP4).build());
+					} catch(YoutubeDLException | InterruptedException | ParseException e) {
+						e.printStackTrace();
+					}
+					return null;
+				}
+
+				@Override
+				protected void onPostExecute(TempSynchedSong tempSynchedSong) {
+					if(tempSynchedSong != null)
+						MainActivity.playlist.appendNext(tempSynchedSong);
+				}
+			}.execute(ytId);
+		}
 	}
 }

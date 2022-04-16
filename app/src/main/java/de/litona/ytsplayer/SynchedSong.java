@@ -3,12 +3,14 @@ package de.litona.ytsplayer;
 import android.annotation.SuppressLint;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.collection.LruCache;
 
+import com.google.android.exoplayer2.MediaItem;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.UnsupportedTagException;
@@ -20,9 +22,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
-final class SynchedSong extends PreSynchedSong implements Comparable<SynchedSong> {
+class SynchedSong extends PreSynchedSong implements Comparable<SynchedSong> {
 
 	@SuppressLint("SimpleDateFormat") private static final SimpleDateFormat yearDisplayFormat = new SimpleDateFormat("yyyy");
 	private static final LruCache<File, Bitmap> bitmapCache = new LruCache<File, Bitmap>((int) ((Runtime.getRuntime().maxMemory() / 1024) / 5)) {
@@ -39,6 +42,18 @@ final class SynchedSong extends PreSynchedSong implements Comparable<SynchedSong
 	private final String interpret;
 	private final String year;
 	private final boolean hasThumbnail;
+
+	protected SynchedSong(String ytId, String ytTitle, Collection<String> tags, File file, long added, long uploaded, boolean hasThumbnail,
+		String simpleTitle, String interpret, String year) {
+		super(ytId, ytTitle, tags);
+		this.file = file;
+		this.added = added;
+		this.uploaded = uploaded;
+		this.hasThumbnail = hasThumbnail;
+		this.simpleTitle = simpleTitle;
+		this.interpret = interpret;
+		this.year = year;
+	}
 
 	public SynchedSong(JSONObject json) throws JSONException {
 		super(json.getString("ytId"),
@@ -120,6 +135,10 @@ final class SynchedSong extends PreSynchedSong implements Comparable<SynchedSong
 		}
 	}
 
+	public MediaItem getMediaItem() {
+		return MediaItem.fromUri(Uri.fromFile(getFile()));
+	}
+
 	@SuppressWarnings("deprecation") static class BitmapWorkerTask extends AsyncTask<File, Void, Bitmap> {
 
 		private final WeakReference<ImageView> view;
@@ -135,15 +154,17 @@ final class SynchedSong extends PreSynchedSong implements Comparable<SynchedSong
 				Mp3File mp3File = new Mp3File(files[0]);
 				if(mp3File.hasId3v2Tag()) {
 					byte[] imageBytes = mp3File.getId3v2Tag().getAlbumImage();
-					BitmapFactory.Options options = new BitmapFactory.Options();
-					options.inJustDecodeBounds = true;
-					BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
-					options.inJustDecodeBounds = false;
-					if(options.outWidth > 0 && options.outHeight > 0) {
-						options.inSampleSize = 1;
-						while(options.outWidth / (options.inSampleSize + 1) > 112)
-							options.inSampleSize = options.inSampleSize * 2;
-						bitmapCache.put(files[0], t = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
+					if(imageBytes != null) {
+						BitmapFactory.Options options = new BitmapFactory.Options();
+						options.inJustDecodeBounds = true;
+						BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length, options);
+						options.inJustDecodeBounds = false;
+						if(options.outWidth > 0 && options.outHeight > 0) {
+							options.inSampleSize = 1;
+							while(options.outWidth / (options.inSampleSize + 1) > 112)
+								options.inSampleSize = options.inSampleSize * 2;
+							bitmapCache.put(files[0], t = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length));
+						}
 					}
 				}
 			} catch(IOException | InvalidDataException | UnsupportedTagException e) {
