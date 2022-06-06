@@ -1,7 +1,9 @@
 package de.litona.ytsplayer;
 
 import android.os.Bundle;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -54,6 +56,22 @@ public class SonglistFragment extends Fragment {
 				vh.durationV.setText("" + 0);
 				vh.yearV.setText(song.getYear());
 				vh.tagsV.setText(String.join(", ", song.getTags()));
+
+				vh.itemView.setOnTouchListener(new View.OnTouchListener() {
+					private GestureDetector gestureDetector = new GestureDetector(view.getContext(), new GestureDetector.SimpleOnGestureListener() {
+						@Override
+						public boolean onDoubleTap(MotionEvent e) {
+							MainActivity.playlist.appendNext(TagsFragment.selectedSongs.get(i));
+							return super.onDoubleTap(e);
+						}
+					});
+
+					@Override
+					public boolean onTouch(View v, MotionEvent event) {
+						gestureDetector.onTouchEvent(event);
+						return true;
+					}
+				});
 			}
 
 			@Override

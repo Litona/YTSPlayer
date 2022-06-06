@@ -3,7 +3,6 @@ package de.litona.ytsplayer;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -55,7 +54,8 @@ public class MainActivity extends AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		songsDirectory = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
+		//songsDirectory = getExternalFilesDir(Environment.DIRECTORY_MUSIC);
+		songsDirectory = new File("/storage/self/primary/Music/all");
 		songJsonFile = new File(songsDirectory, "songs.json");
 		// Deserializing Songs
 		try(Stream<String> songsJsonStream = Files.lines(songJsonFile.toPath(), StandardCharsets.UTF_8)) {
